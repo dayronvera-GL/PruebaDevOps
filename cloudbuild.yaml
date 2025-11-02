@@ -1,80 +1,76 @@
-steps: # <-- ¡DEBE SER 'steps' EN INGLÉS!
-# ----------------------------------------------------------------------
-# 1. Fase de Integración Continua (CI): Formato, Inicialización y Validación
-# ----------------------------------------------------------------------
-- name: 'hashicorp/terraform:latest'
-  id: 'terraform-fmt'
-  args:
-    - 'fmt'
-    - '-check=true'
-  dir: 'terraform' 
+steps:
+  # ----------------------------------------------------------------------
+  # 1. Fase de Integración Continua (CI): Formato, Inicialización y Validación
+  # ----------------------------------------------------------------------
+  - name: 'hashicorp/terraform:latest'
+    id: 'terraform-fmt'
+    args:
+      - 'fmt'
+      - '-check=true'
+    dir: 'terraform'
 
-- name: 'hashicorp/terraform:latest'
-  id: 'terraform-init'
-  args:
-    - 'init'
-    - '-backend-config=bucket=${_BUCKET_NAME}'
-    - '-get-plugins=true'
-    - '-upgrade'
-    - '-input=false'
-  dir: 'terraform'
+  - name: 'hashicorp/terraform:latest'
+    id: 'terraform-init'
+    args:
+      - 'init'
+      - '-backend-config=bucket=${_TFSTATE_BUCKET}'
+      - '-get-plugins=true'
+      - '-upgrade'
+      - '-input=false'
+    dir: 'terraform'
 
-- name: 'hashicorp/terraform:latest'
-  id: 'terraform-workspace-select-or-new'
-  args:
-    - 'workspace'
-    - 'select'
-    - '${_ENV}'
-    - '||' 
-    - 'terraform'
-    - 'workspace'
-    - 'new'
-    - '${_ENV}'
-  entrypoint: 'bash'
-  dir: 'terraform'
+  - name: 'hashicorp/terraform:latest'
+    id: 'terraform-workspace-select-or-new'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        terraform workspace select ${_ENV} || terraform workspace new ${_ENV}
+    dir: 'terraform'
 
-- name: 'hashicorp/terraform:latest'
-  id: 'terraform-validate'
-  args:
-    - 'validate'
-  dir: 'terraform'
+  - name: 'hashicorp/terraform:latest'
+    id: 'terraform-validate'
+    args:
+      - 'validate'
+    dir: 'terraform'
 
-# ----------------------------------------------------------------------
-# 2. Fase de Despliegue (CD): Planificación
-# ----------------------------------------------------------------------
-- name: 'hashicorp/terraform:latest'
-  id: 'terraform-plan'
-  args:
-    - 'plan'
-    - '-input=false'
-    - '-out=tfplan'
-    - '-var=environment=${_ENV}' 
-  dir: 'terraform'
+  # ----------------------------------------------------------------------
+  # 2. Fase de Despliegue (CD): Planificación
+  # ----------------------------------------------------------------------
+  - name: 'hashicorp/terraform:latest'
+    id: 'terraform-plan'
+    args:
+      - 'plan'
+      - '-input=false'
+      - '-out=tfplan'
+      - '-var=environment=${_ENV}'
+    dir: 'terraform'
 
-# ----------------------------------------------------------------------
-# 3. Fase de Despliegue (CD): Aplicación
-# ----------------------------------------------------------------------
-- name: 'hashicorp/terraform:latest'
-  id: 'terraform-apply'
-  args:
-    - 'apply'
-    - '-input=false'
-    - 'tfplan'
-  dir: 'terraform'
+  # ----------------------------------------------------------------------
+  # 3. Fase de Despliegue (CD): Aplicación
+  # ----------------------------------------------------------------------
+  - name: 'hashicorp/terraform:latest'
+    id: 'terraform-apply'
+    args:
+      - 'apply'
+      - '-input=false'
+      - 'tfplan'
+    dir: 'terraform'
 
 # ----------------------------------------------------------------------
 # 4. Variables de Sustitución (Cloud Build)
 # ----------------------------------------------------------------------
 substitutions:
-  _BUCKET_NAME: 'dayron-qa-2025-terraform-state' # Tu bucket creado
-  _ENV: 'dev' # Valor por defecto.
+  _TFSTATE_BUCKET: 'dayron-qa-2025-terraform-state'    # Bucket para el backend remoto de Terraform (STATE)
+  _LOGS_BUCKET: 'dayron-qa-2025-cloudbuild-logs'       # Bucket SEPARADO para logs de Cloud Build
+  _ENV: 'dev'                                          # Entorno por defecto
 
 # ----------------------------------------------------------------------
-# 5. Configuración de Logs (Según la Documentación Oficial)
+# 5. Configuración de Logs y Ejecución
 # ----------------------------------------------------------------------
-# logsBucket DEBE estar en la raíz (fuera de options)
-logsBucket: 'gs://dayron-qa-2025-terraform-state'
+logsBucket: 'gs://${_LOGS_BUCKET}'
 
 options:
-  # Especifica el tipo de logging
-  logging: GCS_ONLY # Comentario trivial para forzar un cambio
+  logging: GCS_ONLY
+  machineType: 'E2_HIGHCPU_8'
+  substitution_option: 'ALLOW_LOOSE'
