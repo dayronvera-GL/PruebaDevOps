@@ -77,4 +77,4 @@ substitutions:
 # ----------------------------------------------------------------------
 options:
   # Asegúrate de que la SA de Cloud Build tenga permiso para escribir aquí.
-  logBucket: gs://dayron-qa-2025-terraform-state
+  logBucket: gs://${_BUCKET_NAME}
