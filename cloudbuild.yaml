@@ -1,1 +1,73 @@
+# cloudbuild.yaml
+steps:
+# ----------------------------------------------------------------------
+# 1. Fase de Integración Continua (CI): Formato, Inicialización y Validación
+# ----------------------------------------------------------------------
+- name: 'hashicorp/terraform:latest'
+  id: 'terraform-fmt'
+  args:
+    - 'fmt'
+    - '-check=true'
+  dir: 'terraform' 
 
+- name: 'hashicorp/terraform:latest'
+  id: 'terraform-init'
+  args:
+    - 'init'
+    - '-backend-config=bucket=${_BUCKET_NAME}'
+    - '-get-plugins=true'
+    - '-upgrade'
+    - '-input=false'
+  dir: 'terraform'
+
+- name: 'hashicorp/terraform:latest'
+  id: 'terraform-workspace-select-or-new'
+  # Lógica para crear o seleccionar el workspace 'dev' o 'prod'
+  args:
+    - 'workspace'
+    - 'select'
+    - '${_ENV}'
+    - '||' 
+    - 'terraform'
+    - 'workspace'
+    - 'new'
+    - '${_ENV}'
+  entrypoint: 'bash'
+  dir: 'terraform'
+
+- name: 'hashicorp/terraform:latest'
+  id: 'terraform-validate'
+  args:
+    - 'validate'
+  dir: 'terraform'
+
+# ----------------------------------------------------------------------
+# 2. Fase de Despliegue (CD): Planificación
+# ----------------------------------------------------------------------
+- name: 'hashicorp/terraform:latest'
+  id: 'terraform-plan'
+  args:
+    - 'plan'
+    - '-input=false'
+    - '-out=tfplan'
+    - '-var=environment=${_ENV}' 
+  dir: 'terraform'
+
+# ----------------------------------------------------------------------
+# 3. Fase de Despliegue (CD): Aplicación
+# Aplica los cambios. Para 'main', solo se ejecuta tras la aprobación manual.
+# ----------------------------------------------------------------------
+- name: 'hashicorp/terraform:latest'
+  id: 'terraform-apply'
+  args:
+    - 'apply'
+    - '-input=false'
+    - 'tfplan'
+  dir: 'terraform'
+
+# ----------------------------------------------------------------------
+# 4. Variables de Sustitución (Cloud Build)
+# ----------------------------------------------------------------------
+substitutions:
+  _BUCKET_NAME: 'dayron-qa-2025-terraform-state' # Tu bucket creado en la Indicación 3
+  _ENV: 'dev' # Valor por defecto. Se sobrescribe a 'prod' en el Trigger de 'main'
