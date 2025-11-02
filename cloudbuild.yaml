@@ -1,4 +1,4 @@
-pasos:
+steps: # <-- ¡DEBE SER 'steps' EN INGLÉS!
 # ----------------------------------------------------------------------
 # 1. Fase de Integración Continua (CI): Formato, Inicialización y Validación
 # ----------------------------------------------------------------------
@@ -72,12 +72,9 @@ substitutions:
 # ----------------------------------------------------------------------
 # 5. Configuración de Logs (Según la Documentación Oficial)
 # ----------------------------------------------------------------------
-
 # logsBucket DEBE estar en la raíz (fuera de options)
 logsBucket: 'gs://dayron-qa-2025-terraform-state'
 
 options:
   # Especifica el tipo de logging
-  #Prueba1
-  logging: GCS_ONLY
-
+  logging: GCS_ONLY # Comentario trivial para forzar un cambio
