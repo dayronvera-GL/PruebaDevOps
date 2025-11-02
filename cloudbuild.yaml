@@ -8,6 +8,7 @@ steps:
     - 'fmt'
     - '-check=true'
   dir: 'terraform' 
+
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-init'
   args:
@@ -17,9 +18,9 @@ steps:
     - '-upgrade'
     - '-input=false'
   dir: 'terraform'
+
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-workspace-select-or-new'
-  # Lógica para crear o seleccionar el workspace 'dev' o 'prod'
   args:
     - 'workspace'
     - 'select'
@@ -31,11 +32,13 @@ steps:
     - '${_ENV}'
   entrypoint: 'bash'
   dir: 'terraform'
+
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-validate'
   args:
     - 'validate'
   dir: 'terraform'
+
 # ----------------------------------------------------------------------
 # 2. Fase de Despliegue (CD): Planificación
 # ----------------------------------------------------------------------
@@ -47,9 +50,9 @@ steps:
     - '-out=tfplan'
     - '-var=environment=${_ENV}' 
   dir: 'terraform'
+
 # ----------------------------------------------------------------------
 # 3. Fase de Despliegue (CD): Aplicación
-# Aplica los cambios.
 # ----------------------------------------------------------------------
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-apply'
@@ -58,9 +61,18 @@ steps:
     - '-input=false'
     - 'tfplan'
   dir: 'terraform'
+
 # ----------------------------------------------------------------------
 # 4. Variables de Sustitución (Cloud Build)
 # ----------------------------------------------------------------------
 substitutions:
   _BUCKET_NAME: 'dayron-qa-2025-terraform-state' # Tu bucket creado
   _ENV: 'dev' # Valor por defecto.
+
+# ----------------------------------------------------------------------
+# Opciones Globales de Compilación (PARA 2ª GENERACIÓN)
+# ----------------------------------------------------------------------
+options:
+  # Esto soluciona el error "if 'build.service_account' is specified..."
+  logBucket: 'gs://dayron-qa-2025-terraform-state'
+
