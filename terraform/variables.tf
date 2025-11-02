@@ -20,6 +20,16 @@ variable "environment" {
   }
 }
 
+# Variable para definir los rangos de CIDR de las subredes
+variable "cidr_blocks" {
+  description = "Mapa de rangos CIDR para la subred primaria por entorno."
+  type        = map(string)
+  default = {
+    dev  = "10.10.1.0/24"
+    prod = "10.20.1.0/24"
+  }
+}
+
 variable "vm_machine_type" {
   description = "Mapa de tipos de máquina por entorno."
   type = map(string)

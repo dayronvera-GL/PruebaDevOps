@@ -1,0 +1,14 @@
+Directorios de Terraform que contienen ejecutables del proveedor y archivos de estado
+
+.terraform/
+.terraform.lock.hcl
+
+Archivos de estado generados localmente
+
+*.tfstate
+*.tfstate.backup
+
+Claves de acceso (en caso de que las hubieras generado aquí)
+
+*.key
+*.pem
