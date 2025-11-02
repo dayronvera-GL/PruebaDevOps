@@ -14,8 +14,8 @@ steps:
     args:
       - 'init'
       - '-backend-config=bucket=${_TFSTATE_BUCKET}'
-      - '-get-plugins=true'
-      - '-upgrade'
+      # - '-get-plugins=true' <-- CORRECCIÓN: Flag obsoleto eliminado.
+      # - '-upgrade' <-- CORRECCIÓN: Flag obsoleto eliminado.
       - '-input=false'
     dir: 'terraform'
 
