@@ -70,9 +70,13 @@ substitutions:
   _ENV: 'dev' # Valor por defecto.
 
 # ----------------------------------------------------------------------
-# Opciones Globales de Compilación (PARA 2ª GENERACIÓN)
+# 5. Configuración de Logs (Según la Documentación Oficial)
 # ----------------------------------------------------------------------
+
+# logsBucket DEBE estar en la raíz (fuera de options)
+logsBucket: 'gs://dayron-qa-2025-terraform-state'
+
 options:
-  # Esto soluciona el error "if 'build.service_account' is specified..."
-  logBucket: 'gs://dayron-qa-2025-terraform-state'
+  # Especifica el tipo de logging
+  logging: GCS_ONLY
 
