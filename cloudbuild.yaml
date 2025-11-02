@@ -19,7 +19,7 @@ steps:
 
   - name: 'hashicorp/terraform:latest'
     id: 'terraform-workspace-select-or-new'
-    entrypoint: 'sh' # <-- CORRECCIÓN: Cambiado de 'bash' a 'sh'
+    entrypoint: 'sh'
     args:
       - '-c'
       - |
@@ -30,6 +30,7 @@ steps:
     id: 'terraform-validate'
     args:
       - 'validate'
+      - '-var=project_id=${PROJECT_ID}' # <-- CORRECCIÓN: Añadido Project ID
     dir: 'terraform'
 
   # ----------------------------------------------------------------------
@@ -42,6 +43,7 @@ steps:
       - '-input=false'
       - '-out=tfplan'
       - '-var=environment=${_ENV}'
+      - '-var=project_id=${PROJECT_ID}' # <-- CORRECCIÓN: Añadido Project ID
     dir: 'terraform'
 
   # ----------------------------------------------------------------------
