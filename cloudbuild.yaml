@@ -6,7 +6,7 @@ steps:
     id: 'terraform-fmt'
     args:
       - 'fmt'
-      - '-recursive' # <-- CAMBIO: De '-check=true' a '-recursive'. Esto arregla el formato.
+      - '-recursive'
     dir: 'terraform'
 
   - name: 'hashicorp/terraform:latest'
@@ -14,14 +14,12 @@ steps:
     args:
       - 'init'
       - '-backend-config=bucket=${_TFSTATE_BUCKET}'
-      # - '-get-plugins=true' <-- CORRECCIÓN: Flag obsoleto eliminado.
-      # - '-upgrade' <-- CORRECCIÓN: Flag obsoleto eliminado.
       - '-input=false'
     dir: 'terraform'
 
   - name: 'hashicorp/terraform:latest'
     id: 'terraform-workspace-select-or-new'
-    entrypoint: 'bash'
+    entrypoint: 'sh' # <-- CORRECCIÓN: Cambiado de 'bash' a 'sh'
     args:
       - '-c'
       - |
