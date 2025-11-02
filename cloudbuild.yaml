@@ -1,4 +1,4 @@
-steps:
+pasos:
 # ----------------------------------------------------------------------
 # 1. Fase de Integración Continua (CI): Formato, Inicialización y Validación
 # ----------------------------------------------------------------------
@@ -78,5 +78,6 @@ logsBucket: 'gs://dayron-qa-2025-terraform-state'
 
 options:
   # Especifica el tipo de logging
+  #Prueba1
   logging: GCS_ONLY
 
