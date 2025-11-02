@@ -1,4 +1,3 @@
-# cloudbuild.yaml
 steps:
 # ----------------------------------------------------------------------
 # 1. Fase de Integración Continua (CI): Formato, Inicialización y Validación
@@ -9,7 +8,6 @@ steps:
     - 'fmt'
     - '-check=true'
   dir: 'terraform' 
-
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-init'
   args:
@@ -19,7 +17,6 @@ steps:
     - '-upgrade'
     - '-input=false'
   dir: 'terraform'
-
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-workspace-select-or-new'
   # Lógica para crear o seleccionar el workspace 'dev' o 'prod'
@@ -34,13 +31,11 @@ steps:
     - '${_ENV}'
   entrypoint: 'bash'
   dir: 'terraform'
-
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-validate'
   args:
     - 'validate'
   dir: 'terraform'
-
 # ----------------------------------------------------------------------
 # 2. Fase de Despliegue (CD): Planificación
 # ----------------------------------------------------------------------
@@ -52,10 +47,9 @@ steps:
     - '-out=tfplan'
     - '-var=environment=${_ENV}' 
   dir: 'terraform'
-
 # ----------------------------------------------------------------------
 # 3. Fase de Despliegue (CD): Aplicación
-# Aplica los cambios. Para 'main', solo se ejecuta tras la aprobación manual.
+# Aplica los cambios.
 # ----------------------------------------------------------------------
 - name: 'hashicorp/terraform:latest'
   id: 'terraform-apply'
@@ -64,17 +58,9 @@ steps:
     - '-input=false'
     - 'tfplan'
   dir: 'terraform'
-
 # ----------------------------------------------------------------------
 # 4. Variables de Sustitución (Cloud Build)
 # ----------------------------------------------------------------------
 substitutions:
-  _BUCKET_NAME: 'dayron-qa-2025-terraform-state' # Tu bucket creado en la Indicación 3
-  _ENV: 'dev' # Valor por defecto. Se sobrescribe a 'prod' en el Trigger de 'main'
-# ----------------------------------------------------------------------
-# Opciones Globales de Compilación
-# Esto soluciona el error 'invalid argument' al usar una Service Account.
-# ----------------------------------------------------------------------
-options:
-  # Asegúrate de que la SA de Cloud Build tenga permiso para escribir aquí.
-  logBucket: gs://${_BUCKET_NAME}
+  _BUCKET_NAME: 'dayron-qa-2025-terraform-state' # Tu bucket creado
+  _ENV: 'dev' # Valor por defecto.
