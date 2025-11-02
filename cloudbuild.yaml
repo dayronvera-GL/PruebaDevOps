@@ -71,3 +71,10 @@ steps:
 substitutions:
   _BUCKET_NAME: 'dayron-qa-2025-terraform-state' # Tu bucket creado en la Indicación 3
   _ENV: 'dev' # Valor por defecto. Se sobrescribe a 'prod' en el Trigger de 'main'
+# ----------------------------------------------------------------------
+# Opciones Globales de Compilación
+# Esto soluciona el error 'invalid argument' al usar una Service Account.
+# ----------------------------------------------------------------------
+options:
+  # Asegúrate de que la SA de Cloud Build tenga permiso para escribir aquí.
+  logBucket: gs://dayron-qa-2025-terraform-state
