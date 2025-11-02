@@ -6,7 +6,7 @@ steps:
     id: 'terraform-fmt'
     args:
       - 'fmt'
-      - '-check=true'
+      - '-recursive' # <-- CAMBIO: De '-check=true' a '-recursive'. Esto arregla el formato.
     dir: 'terraform'
 
   - name: 'hashicorp/terraform:latest'
@@ -61,9 +61,9 @@ steps:
 # 4. Variables de Sustitución (Cloud Build)
 # ----------------------------------------------------------------------
 substitutions:
-  _TFSTATE_BUCKET: 'dayron-qa-2025-terraform-state'    # Bucket para el backend remoto de Terraform (STATE)
-  _LOGS_BUCKET: 'dayron-qa-2025-cloudbuild-logs'       # Bucket SEPARADO para logs de Cloud Build
-  _ENV: 'dev'                                          # Entorno por defecto
+  _TFSTATE_BUCKET: 'dayron-qa-2025-terraform-state'    # Bucket para el backend remoto de Terraform
+  _LOGS_BUCKET: 'dayron-qa-2025-cloudbuild-logs'      # Bucket separado para logs de Cloud Build
+  _ENV: 'dev'                                         # Entorno por defecto
 
 # ----------------------------------------------------------------------
 # 5. Configuración de Logs y Ejecución
@@ -73,4 +73,6 @@ logsBucket: 'gs://${_LOGS_BUCKET}'
 options:
   logging: GCS_ONLY
   machineType: 'E2_HIGHCPU_8'
-  substitution_option: 'ALLOW_LOOSE'
+  substitution_option: 'ALLOW_LOOSE'  # Permite variables personalizadas
+  dynamic_substitutions: true
+
