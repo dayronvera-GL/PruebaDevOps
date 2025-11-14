@@ -34,7 +34,7 @@ resource "google_compute_instance" "web_server" {
     sudo apt-get update
     sudo apt-get install -y apache2
     sudo systemctl enable apache2
-    echo "<h1>Web Server en ${var.environment} (Desplegado via Terraform CI/CD el $(date +%Y-%m-%d))</h1>" | sudo tee /var/www/html/index.html
+    echo "<h1>Web Server en ${var.environment} (Desplegado via Terraform CI/CD con wilson el $(date +%Y-%m-%d))</h1>" | sudo tee /var/www/html/index.html
     sudo systemctl start apache2
   EOF
   # Tags de red para que las reglas de firewall apliquen a esta instancia

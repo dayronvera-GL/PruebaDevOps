@@ -31,9 +31,8 @@ steps:
       - 'validate'
     dir: 'terraform'
 
-  # ----------------------------------------------------------------------
   # 2. Fase de Despliegue (CD): Planificación
-  # ----------------------------------------------------------------------
+
   - name: 'hashicorp/terraform:latest'
     id: 'terraform-plan'
     args:
@@ -44,9 +43,8 @@ steps:
       - '-var=project_id=${PROJECT_ID}' 
     dir: 'terraform'
 
-  # ----------------------------------------------------------------------
   # 3. Fase de Despliegue (CD): Aplicación
-  # ----------------------------------------------------------------------
+
   - name: 'hashicorp/terraform:latest'
     id: 'terraform-apply'
     args:
@@ -55,17 +53,17 @@ steps:
       - 'tfplan'
     dir: 'terraform'
 
-# ----------------------------------------------------------------------
+
 # 4. Variables de Sustitución (Cloud Build)
-# ----------------------------------------------------------------------
+
 substitutions:
   _TFSTATE_BUCKET: 'dayron-qa-2025-terraform-state'    # Bucket para el backend remoto de Terraform
   _LOGS_BUCKET: 'dayron-qa-2025-cloudbuild-logs'      # Bucket separado para logs de Cloud Build
   _ENV: 'dev'                                         # Entorno por defecto
 
-# ----------------------------------------------------------------------
+
 # 5. Configuración de Logs y Ejecución
-# ----------------------------------------------------------------------
+
 logsBucket: 'gs://${_LOGS_BUCKET}'
 
 options:
