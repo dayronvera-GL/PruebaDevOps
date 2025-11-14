@@ -1,7 +1,6 @@
 steps:
-  # ----------------------------------------------------------------------
+
   # 1. Fase de Integración Continua (CI): Formato, Inicialización y Validación
-  # ----------------------------------------------------------------------
   - name: 'hashicorp/terraform:latest'
     id: 'terraform-fmt'
     args:
@@ -30,7 +29,6 @@ steps:
     id: 'terraform-validate'
     args:
       - 'validate'
-      # La variable project_id no es necesaria para la validación de sintaxis, se elimina la flag -var
     dir: 'terraform'
 
   # ----------------------------------------------------------------------
